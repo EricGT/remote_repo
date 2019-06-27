@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+
+<!--
+
+The MIT License
+
+Copyright 2018 Eric G Taucher
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Prolog Programming - Unification</title>
+
+    <!-- Style -->
+    <!-- <link rel="stylesheet" type="text/css" href=".\css\notes.css"> -->
+
+    <!-- <style>
+        table.Operator_Info,
+        tr.Operator_Info,
+        td.Operator_Info {
+            border: none;
+        }
+    </style> -->
+
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Prolog Programming - Unification</h1>
+
+    <!--Unification-->
+    <section name="Unification">
+        <h3 id="Unification"><a
+                href="https://en.wikipedia.org/wiki/Unification_(computer_science)#Examples_of_syntactic_unification_of_first-order_terms">Unification</a>
+        </h3>
+
+        <section>
+            <h4>References</h4>
+            <ul>
+                <li><a href="http://www.dai.ed.ac.uk/groups/ssp/bookpages/quickprolog/node12.html">Unification</a> -
+                    Gives verbal description of unification as procedural steps.</li>
+                <li><a href="https://github.com/andrejbauer/plzoo/blob/master/src/miniprolog/unify.ml">unify.ml</a> -
+                    Unification implemented in ML. Part of Programming Zoo</li>
+                <li><a href="https://mitpress.mit.edu/sicp/full-text/sicp/book/node100.html">LISP implementation</a>
+                </li>
+                <li><a href="https://github.com/SWI-Prolog/swipl-devel/blob/master/src/pl-prims.c#L207">SWI-Prolog
+                        Unification</a> -</li>
+                <li><a href="https://en.wikipedia.org/wiki/Unification_(computer_science)">Unification (computer
+                        science)</a> - Wikipedia</li>
+                <li><a href="https://en.wikipedia.org/wiki/Substitution_(logic)">Substitution (logic)</a> - Wikipedia
+                </li>
+                <li><a href="http://homepage.cs.uiowa.edu/~fleck/unification.pdf">Substitutions and Unification in
+                        Prolog</a></li>
+                <li><a href="http://profs.sci.univr.it/~farinelli/courses/ar/slides/unification.pdf">Substitution and
+                        Unification</a></li>
+                <li><a href=""></a></li>
+                <li><a href=""></a></li>
+                <li><a href=""></a></li>
+                <li><a href=""></a></li>
+            </ul>
+        </section>
+    </section>
+
+    Examples from <a
+        href="https://en.wikipedia.org/wiki/Unification_(computer_science)#Examples_of_syntactic_unification_of_first-order_terms">Wikipedia</a>
+    <p>Succeeds - <a href="https://en.wikipedia.org/wiki/Tautology_(logic)">tautology</a></p>
+    <p>Fails - ⊥ (<a href="https://en.wikipedia.org/wiki/Bottom_type">Bottom Type</a>)</p>
+    <table>
+        <tr>
+            <th>
+                Prolog Notation
+            </th>
+            <th>
+                <p style="text-align: left">Result</p>
+            </th>
+            <th>
+                <p style="text-align: left">MGU</p>
+            </th>
+            <th>
+                <p style="text-align: left">Explanation</p>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                a = a
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                {}
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                a = b
+            </td>
+            <td>
+                Fails
+            </td>
+            <td>
+                {}
+            </td>
+            <td>
+                a and b do not match
+            </td>
+        </tr>
+        <tr>
+            <td>
+                X = X
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                {}
+            </td>
+            <td>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                a = X
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                { X ↦ a }
+            </td>
+            <td>
+                X is unified with the constant a
+            </td>
+        </tr>
+        <tr>
+            <td>
+                X = Y
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                { X ↦ Y }
+            </td>
+            <td>
+                X and Y are aliased
+            </td>
+        </tr>
+        <tr>
+            <td>
+                f(a,X) = f(a,b)
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                { X ↦ b }
+            </td>
+            <td>
+                function and constant symbols match, X is unified with the constant b
+            </td>
+        </tr>
+        <tr>
+            <td>
+                f(a) = g(a)
+            </td>
+            <td>
+                Fails
+            </td>
+            <td>
+                {}
+            </td>
+            <td>
+                f and g do not match
+            </td>
+        </tr>
+        <tr>
+            <td>
+                f(X) = f(Y)
+            </td>
+            <td>
+                Fails
+            </td>
+            <td>
+                { X ↦ Y }
+            </td>
+            <td>
+                X and Y are aliased
+            </td>
+        </tr>
+        <tr>
+            <td>
+                f(X) = g(Y)
+            </td>
+            <td>
+                Fails
+            </td>
+            <td>
+                {}
+            </td>
+            <td>
+                f and g do not match
+            </td>
+        </tr>
+        <tr>
+            <td>
+                f(X) = f(Y,Z)
+            </td>
+            <td>
+                Fails
+            </td>
+            <td>
+                {}
+            </td>
+            <td>
+                Fails. The f function symbols have different <a href="https://en.wikipedia.org/wiki/Arity">arity</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                f(g(X)) = f(Y)
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                { Y ↦ g(X) }
+            </td>
+            <td>
+                Unifies y with the g(x)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                f(g(X),X) = f(Y,a)
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                { X ↦ a, Y ↦ g(a) }
+            </td>
+            <td>
+                Unifies X with constant a, and Y with the term g(a)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                X = f(X)
+            </td>
+            <td>
+                Succeeds<br />Should be Fails.
+            </td>
+            <td>
+                { X ↦ f(f(f(f(...)))) }
+            </td>
+            <td>
+                Returns ⊥ in first-order logic and many modern Prolog dialects (enforced by the occurs check).<br />
+                Succeeds in traditional Prolog and in Prolog II, unifying X with infinite term X=f(f(f(f(...)))).
+            </td>
+        </tr>
+        <tr>
+            <td>
+                X = Y, Y = a
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                { X ↦ a, Y ↦ a }
+            </td>
+            <td>
+                Both X and Y are unified with the constant a
+            </td>
+        </tr>
+        <tr>
+            <td>
+                a = Y, X = Y
+            </td>
+            <td>
+                Succeeds
+            </td>
+            <td>
+                { X ↦ a, Y ↦ a }
+            </td>
+            <td>
+                Both X and Y are unified with the constant a
+            </td>
+        </tr>
+        <tr>
+            <td>
+                X = a, b = X
+            </td>
+            <td>
+                Fails
+            </td>
+            <td>
+                {}
+            </td>
+            <td>
+                Fails. a and b do not match, so x can't be unified with both
+            </td>
+        </tr>
+    </table>
+    <p><span>Examples from <a
+                href="https://en.wikipedia.org/wiki/Unification_(computer_science)#Examples_of_syntactic_unification_of_first-order_terms">Wikipedia</a>
+            using SWI-Prolog</span></p>
+
+    <section>
+        <h4>Unification Examples</h4>
+        <p>From: Wikipedia</p>
+
+        <!-- start_chars((Code,Char)) :-
+    between(0x0000,0xFFFF,Code),
+    char_code(Char,Code),
+    bagof(Type,char_type(Code,Type),Types),
+    member(prolog_var_start,Types).
+
+R =  (915, 'Γ') ;
+R =  (11268, 'Ⰴ') ;
+R =  (11309, 'Ⱝ') ; -->
+
+        <!-- <p>
+                ⌂ -> Γ  <br>
+                ⌀ -> Ⰴ  <br>
+                ⌘ -> Ⱝ
+            </p> -->
+
+        <table>
+            <tr>
+                <th colspan="2">Symbols</th>
+            </tr>
+            <tr>
+                <th>Variables</th>
+                <th>Constants</th>
+            </tr>
+            <tr>
+                <td>In Prolog: Start with upper case letter </td>
+                <td>In Prolog: Start with lower case letter</td>
+            </tr>
+            <tr>
+                <td>X Y Z</td>
+                <td>a b f g</td>
+            </tr>
+            <tr>
+                <td>Δ Φ Ω</td>
+                <td>π λ ε</td>
+            </tr>
+            <tr>
+                <td>⌂ ⌀ ⌘</td>
+                <td>☃ ⍟ ∎</td>
+            </tr>
+            <tr>
+                <td>Rectangles</td>
+                <td>Ovals</td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">a = a</td>
+                <td style="text-align:left;vertical-align:top">π = π</td>
+                <td style="text-align:left;vertical-align:top">☃ = ☃</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: {}
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: {}
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: {}
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(a,a).<br />
+                    true.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(π,π).<br />
+                    true.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(☃,☃).<br />
+                    true.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_030 Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_030</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">a</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">a</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_031 Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_031</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">π</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">π</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_031_symbol Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_031_symbol</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">☃</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">☃</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">a = b</td>
+                <td style="text-align:left;vertical-align:top">π = λ</td>
+                <td style="text-align:left;vertical-align:top">☃ = ⍟</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(a,b).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(π,λ).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(☃,⍟).<br />
+                    false.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_031 Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_031</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">a</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">b</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_032_greek Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_032_greek</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">π</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">λ</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_032_symbol Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_032_symbol</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">☃</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">⍟</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">X = X</td>
+                <td style="text-align:left;vertical-align:top">Δ = Δ</td>
+                <td style="text-align:left;vertical-align:top">⌂ = ⌂</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: {}
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: {}
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: {}
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(X,X).<br />
+                    true.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(Δ,Δ).<br />
+                    true.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(⌂,⌂).<br />
+                    true.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_033 Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_033</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <polygon fill="none" stroke="black" points="54,-36 0,-36 0,-0 54,-0 54,-36" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">X</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <polygon fill="none" stroke="black" points="126,-36 72,-36 72,-0 126,-0 126,-36" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">X</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041)-->
+                    <!-- Title: unification_example_033_greek Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_033_greek</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <polygon fill="none" stroke="black" points="54,-36 0,-36 0,-0 54,-0 54,-36" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">Δ</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <polygon fill="none" stroke="black" points="126,-36 72,-36 72,-0 126,-0 126,-36" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">Δ</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+                <td style="text-align:center;vertical-align:top">
+                    <!-- Generated by graphviz version 2.38.0 (20140413.2041) -->
+                    <!-- Title: unification_example_033_symbol Pages: 1 -->
+                    <svg width="134pt" height="44pt" viewBox="0.00 0.00 134.00 44.00" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+                            <title>unification_example_033_symbol</title>
+                            <polygon fill="white" stroke="none" points="-4,4 -4,-40 130,-40 130,4 -4,4" />
+                            <!-- node_1_1 -->
+                            <g id="node1" class="node">
+                                <title>node_1_1</title>
+                                <polygon fill="none" stroke="black" points="54,-36 0,-36 0,-0 54,-0 54,-36" />
+                                <text text-anchor="middle" x="27" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">⌂</text>
+                            </g>
+                            <!-- node_1_2 -->
+                            <g id="node2" class="node">
+                                <title>node_1_2</title>
+                                <polygon fill="none" stroke="black" points="126,-36 72,-36 72,-0 126,-0 126,-36" />
+                                <text text-anchor="middle" x="99" y="-14.3" font-family="Times New Roman,serif"
+                                    font-size="14.00">⌂</text>
+                            </g>
+                        </g>
+                    </svg>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">a = X</td>
+                <td style="text-align:left;vertical-align:top">π = Δ</td>
+                <td style="text-align:left;vertical-align:top">☃ = ⌂</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { X ↦ a }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Δ ↦ π }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌂ ↦ ☃ }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(a,X).<br />
+                    X = a.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(π,Δ).<br />
+                    Δ = π.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(☃,⌂).<br />
+                    ⌂ = ☃.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_034.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_034_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_034_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">X = Y</td>
+                <td style="text-align:left;vertical-align:top">Δ = Φ</td>
+                <td style="text-align:left;vertical-align:top">⌂ = ⌀</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { X ↦ Y }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Δ ↦ Φ }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌂ ↦ ⌀ }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(X,Y).<br />
+                    X = Y.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(Δ,Φ).<br />
+                    Δ = Φ.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(⌂,⌀).<br />
+                    ⌂ = ⌀.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_035.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_035_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_035_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">f(a,X) = f(a,b)</td>
+                <td style="text-align:left;vertical-align:top">λ(π,Φ) = λ(π,ε)</td>
+                <td style="text-align:left;vertical-align:top">⍟(☃,⌀) = ⍟(☃,∎)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { X ↦ b }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Φ ↦ ε }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌀ ↦ ∎ }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(f(a,X),f(a,b)).<br />
+                    X = b.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(λ(π,Φ),λ(π,ε)).<br />
+                    Φ = ε.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(⍟(☃,⌀),⍟(☃,∎)).<br />
+                    ⌀ = ∎.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_036.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_036_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_036_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">f(a) = g(a)</td>
+                <td style="text-align:left;vertical-align:top">ε(λ) = π(λ)</td>
+                <td style="text-align:left;vertical-align:top">∎(⍟) = ☃(⍟)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(f(a),g(a)).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(ε(λ),π(λ)).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(∎(⍟),☃(⍟)).<br />
+                    false.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_037.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_037_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_037_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">f(X) = f(Y)</td>
+                <td style="text-align:left;vertical-align:top">π(Ω) = π(Δ)</td>
+                <td style="text-align:left;vertical-align:top">☃(⌘) = ☃(⌂)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { X ↦ Y }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Ω ↦ Δ }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌘ ↦ ⌂ }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(f(X),f(Y)).<br />
+                    X = Y.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(π(Ω),π(Δ)).<br />
+                    Ω = Δ.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(☃(⌘),☃(⌂)).<br />
+                    ⌘ = ⌂.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_038.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_038_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_038_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">f(X) = g(Y)</td>
+                <td style="text-align:left;vertical-align:top">ε(Ω) = π(Φ)</td>
+                <td style="text-align:left;vertical-align:top">∎(⌘) = ☃(⌀)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(f(X),g(Y)).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(ε(Ω),π(Φ)).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(∎(⌘),☃(⌀)).<br />
+                    false.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_039.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_039_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_039_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">f(X) = f(Y,Z)</td>
+                <td style="text-align:left;vertical-align:top">λ(Ω) = λ(Φ,Δ)</td>
+                <td style="text-align:left;vertical-align:top">⍟(⌘) = ⍟(⌀,⌂)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(f(X),f(Y,Z)).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(λ(Ω),λ(Φ,Δ)).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(⍟(⌘),⍟(⌀,⌂)).<br />
+                    false.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_040.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_040_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_040_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">f(g(X)) = f(Y)</td>
+                <td style="text-align:left;vertical-align:top">π(λ(Φ)) = π(Δ)</td>
+                <td style="text-align:left;vertical-align:top">☃(⍟(⌀)) = ☃(⌂)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Y ↦ g(X) }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Δ ↦ λ(Φ) }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌂ ↦ ⍟(⌀) }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(f(g(X)),f(Y)).<br />
+                    Y = g(X).
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(π(λ(Φ)),π(Δ)).<br />
+                    Δ = λ(Φ).
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(☃(⍟(⌀)),☃(⌂)).<br />
+                    ⌂ = ⍟(⌀).
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_041.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_041_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_041_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">f(g(X),X) = f(Y,a)</td>
+                <td style="text-align:left;vertical-align:top">ε(λ(Φ),Φ) = ε(Δ,π)</td>
+                <td style="text-align:left;vertical-align:top">∎(⍟(⌀),⌀) = ∎(⌂,☃)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { X ↦ a, Y ↦ g(a) }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Φ ↦ π, Δ ↦ λ(π) }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌀ ↦ ☃, ⌂ ↦ ⍟(☃) }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(f(g(X),X),f(Y,a)).<br />
+                    X = a,<br />
+                    Y = g(a).
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(ε(λ(Φ),Φ),ε(Δ,π)).<br />
+                    Φ = π,<br />
+                    Δ = λ(π).
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(∎(⍟(⌀),⌀),∎(⌂,☃)).<br />
+                    ⌀ = ☃,<br />
+                    ⌂ = ⍟(☃).
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_042.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_042_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_042_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">X = f(X)</td>
+                <td style="text-align:left;vertical-align:top">Φ = π(Φ)</td>
+                <td style="text-align:left;vertical-align:top">⌀ = ☃(⌀)</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font><br />
+                    Occurs check: fails
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font><br />
+                    Occurs check: fails
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font><br />
+                    Occurs check: fails
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(X,f(X)).<br />
+                    X = f(X).
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(Φ,π(Φ)).<br />
+                    Φ = π(Φ).
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- =(⌀,☃(⌀)).<br />
+                    ⌀ = ☃(⌀).
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- unify_with_occurs_check(X,f(Y,X))<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- unify_with_occurs_check(Φ,π(Φ)).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- unify_with_occurs_check(⌀,☃(⌀)).<br />
+                    false.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_043.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_043_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_043_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    X = Y,<br />Y = a
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Ω = Δ,<br />Δ = ε
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    ⌘ = ⌂,<br />⌂ = ∎
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Y ↦ a, X ↦ a }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Δ ↦ ε, Ω ↦ ε }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌂ ↦ ∎, ⌘ ↦ ∎ }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- X=Y,Y=a.<br />
+                    X = Y, Y = a.<br />
+                    or<br />
+                    ?- =(X,Y),=(Y,a).<br />
+                    X = Y, Y = a.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- Ω=Δ,Δ=ε.<br />
+                    Ω = Δ, Δ = ε.<br />
+                    or<br />
+                    ?- =(Ω,Δ),=(Δ,ε).<br />
+                    Ω = Δ, Δ = ε.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- ⌘=⌂,⌂=∎.<br />
+                    ⌘ = ⌂, ⌂ = ∎.<br />
+                    or<br />
+                    ?- =(⌘,⌂),=(⌂,∎).<br />
+                    ⌘ = ⌂, ⌂ = ∎.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_044.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_044_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_044_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">a = Y,<br />X = Y</td>
+                <td style="text-align:left;vertical-align:top">λ = Φ,<br />Δ = Φ</td>
+                <td style="text-align:left;vertical-align:top">⍟ = ⌀,<br />⌂ = ⌀</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Y ↦ a, X ↦ a }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { Φ ↦ λ, Δ ↦ λ }
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="green">true</font><br />
+                    MGU: { ⌀ ↦ ⍟, ⌂ ↦ ⍟ }
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- a=Y,X=Y.<br />
+                    Y = X, X = a.<br />
+                    or<br />
+                    ?- =(a,Y),=(X,Y).<br />
+                    Y = X, X = a.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- λ=Φ,Δ=Φ.<br />
+                    Φ = Δ, Δ = λ.<br />
+                    or<br />
+                    ?- =(λ,Φ),=(Δ,Φ).<br />
+                    Φ = Δ, Δ = λ.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- ⍟=⌀,⌂=⌀.<br />
+                    ⌀ = ⌂, ⌂ = ⍟.<br />
+                    or<br />
+                    ?- =(⍟,⌀),=(⌂,⌀).<br />
+                    ⌀ = ⌂, ⌂ = ⍟.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_045.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_045_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_045_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td style="text-align:left;vertical-align:top">X = a,<br />b = X</td>
+                <td style="text-align:left;vertical-align:top">Δ = λ,<br />ε = Δ</td>
+                <td style="text-align:left;vertical-align:top">⌂ = ⍟,<br />∎ = ⌂</td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    Unify: <font color="red">false</font>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- X=a,b=X.<br />
+                    false.<br />
+                    or<br />
+                    ?- =(X,a),=(b,X).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- Δ=λ,ε=Δ.<br />
+                    false.<br />
+                    or<br />
+                    ?- =(Δ,λ),=(ε,Δ).<br />
+                    false.
+                </td>
+                <td style="text-align:left;vertical-align:top">
+                    SWI-Prolog:<br />
+                    ?- ⌂=⍟,∎=⌂.<br />
+                    false.<br />
+                    or<br />
+                    ?- =(⌂,⍟),=(∎,⌂).<br />
+                    false.
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_046.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_046_greek.svg" />
+                </td>
+                <td style="text-align:center;vertical-align:top"><img src="./SVG/unification_example_046_symbol.svg" />
+                </td>
+            </tr>
+        </table>
+
+        <section>
+            <h4>Unification Examples</h4>
+            <p>From: "Prolog Programming for Artificial Intelligence" (4th Edition) by Ivan Bratko</p>
+            <table>
+                Key
+                <tr>
+                    <td>Ovals are constants, start with lower case letter in Prolog</td>
+                </tr>
+                <tr>
+                    <td>Squares are variables, start with upper case letter in Prolog</td>
+                </tr>
+            </table>
+            <br />
+            <table class="border">
+                <tr>
+                    <td>Facts: parent</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+parent(pam,bob).     % Pam is a parent of Bob
+parent(tom,bob).
+parent(tom,liz).
+parent(bob,ann).
+parent(bob,pat).
+parent(pat,jim).
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_101.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table class="border">
+                <tr>
+                    <td>Facts: male and female</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+female(pam).           % Pam is female
+female(liz).
+female(pat).
+female(ann).
+male(tom).             % Tom is male
+male(bob).
+male(jim).
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_102.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table class="border">
+                <tr>
+                    <td>Parent and gender facts combined</td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_103.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>Predicate: mother</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+mother(Mother,Child) :-     % Mother is the mother of Child if
+                            <font color="orange">parent</font>(Mother,Child),     % Mother is the parent of Child and
+                            <font color="blue">female</font>(Mother).           % Mother is female
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_104.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>Predicate: grandparent</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+grandparent(Grandparent,Grandchild) :-  % Grandparent is a grandparent of Grandchild if
+                            <font color="orange">parent</font>(Grandparent,Parent),           % Grandparent is a parent of Parent and
+                            <font color="blue">parent</font>(Parent,Grandchild).            % Parent is a parent of Grandchild
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_105.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>Predicate: sister_01</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+sister_01(Sister,Sibling) :-   % Sister is a sister of Sibling if
+                            <font color="orange">parent</font>(Parent,Sister),      % Parent is a parent of Sister and
+                            <font color="blue">parent</font>(Parent,Sibling),     % Parent is a parent of Sibling and
+                            <font color="green">female</font>(Sister).             % Sister is female.
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_106.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>Predicate: sister</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+sister(Sister,Sibling) :-     % Sister is a sister of Sibling if
+                            <font color="orange">parent</font>(Parent,Sister),
+                            <font color="blue">parent</font>(Parent,Sibling),     % Sister and Sibling have the same Parent and
+                            <font color="green">female</font>(Sister),             % Sister is female and
+  Sister <font color="purple">\=</font> Sibling.          % Sister and Sibling are different
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Note: Sister \= Sibling needs to come after the variables Sister and Sibling are bound<br />
+                        otherwise the comparison (needing unification) will fail.
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_107.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>Predicate: aunt</td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+aunt(Person,Aunt) :-       % A Person is an Aunt if
+                            <font color="orange">parent</font>(Parent,Person),   % Parent is a parent of Person and
+                            <font color="blue">sister</font>(Aunt,Parent).     % Aunt is a sister of Parent
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_108.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>
+                        Predicate: aunt<br />
+                        sister unfolded
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <pre>
+aunt(Person,Aunt) :-            % A Person has an Aunt if
+                            <font color="orange">parent</font>(Parent_02,Person),     % Parent_02 is a parent of Person and
+                            <font color="blue">parent</font>(Parent_01,Aunt),
+                            <font color="green">parent</font>(Parent_01,Parent_02),  % Aunt and Parent_02 have the same Parent_01 and
+                            <font color="purple">female</font>(Aunt),                 % Aunt is female and
+  Aunt <font color="red">\=</font> Parent_02.            % Aunt and Parent_02 are different
+</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_109.svg" /></td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>Predicate: ancestor</td>
+                </tr>
+                <tr>
+                    <td>
+                        <table>
+                            <tr>
+                                <td style="text-align:left;vertical-align:top">
+                                    <pre>
+ancestor(X,Z) :-      % X is an ancestor of Z if
+                                        <font color="orange">parent</font>(X,Z).        % X is a parent of Z
+</pre>
+                                </td>
+                                <td style="text-align:left;vertical-align:top">
+                                    <pre>
+ancestor(X,Z) :-      % X is an ancestor of Z if
+                                        <font color="orange">parent</font>(X,Y),        % X is a parent of Y and
+                                        <font color="blue">ancestor</font>(Y,Z).      % Y is an ancestor of Z
+</pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center;vertical-align:top"><img
+                                        src="./SVG/unification_example_110.svg" /></td>
+                                <td style="text-align:center;" vertical-align:top"><img
+                                        src="./SVG/unification_example_111.svg" /></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>
+                        Predicate: ancestor<br />
+                        ancestor unfolded
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table>
+                            <tr>
+                                <td style="text-align:left;vertical-align:top">
+                                    <pre>
+ancestor(Y,Z) :-  % Y is an ancestor of Z if
+                                        <font color="orange">parent</font>(Y,Z).    % Y is a parent of Z
+</pre>
+                                </td>
+                                <td style="text-align:left;vertical-align:top">
+                                    <pre>
+ancestor(X,Z) :-    % X is an ancestor of Z if
+                                        <font color="orange">parent</font>(X,Y),      % X is a parent of Y and
+                                        <font color="blue">parent</font>(Y,Z).      % Y is an ancestor of Z
+</pre>
+                                </td>
+                                <td style="text-align:left;vertical-align:top">
+                                    <pre>
+ancestor(W,Z) :-      % W is an ancestor of Z if
+                                        <font color="orange">parent</font>(W,X),        % W is a parent of X and
+                                        <font color="blue">parent</font>(X,Y),        % X is a parent of Y and
+                                        <font color="green">parent</font>(Y,Z).        % Y is a parent of Z
+</pre>
+                                </td>
+                                <td style="text-align:left;vertical-align:top">
+                                    <pre>
+ancestor(V,Z) :-      % V is an ancestor of Z if
+                                        <font color="orange">parent</font>(V,W),        % V is a parent of W and
+                                        <font color="blue">parent</font>(W,X),        % W is a parent of X and
+                                        <font color="green">parent</font>(X,Y),        % X is a parent of Y and
+                                        <font color="purple">parent</font>(Y,Z).        % Y is a parent of Z
+</pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center;vertical-align:top"><img
+                                        src="./SVG/unification_example_112.svg" /></td>
+                                <td style="text-align:center;vertical-align:top"><img
+                                        src="./SVG/unification_example_113.svg" /></td>
+                                <td style="text-align:center;vertical-align:top"><img
+                                        src="./SVG/unification_example_114.svg" /></td>
+                                <td style="text-align:center;vertical-align:top"><img
+                                        src="./SVG/unification_example_115.svg" /></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table class="border">
+                <tr>
+                    <td>See and on facts combined</td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;"><img src="./SVG/unification_example_120.svg" /></td>
+                </tr>
+            </table>
+        </section>
+    </section>
+
+    <!--MGU-->
+    <!-- <section name="MGU">
+        <h3 id="MGU">MGU</h3>
+        <ul>
+            Glossary
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+        </ul>
+        <ul>
+            Notes
+            <li><a href="http://www.mathcs.duq.edu/simon/Fall04/notes-7-4/node6.html">Note that there can be more than
+                    one most general unifier</a></li>
+            <li><a href="http://www.mathcs.duq.edu/simon/Fall04/notes-7-4/node6.html">For example, the disagreement set
+                    for { P(x,y,a), P(x,f(g),b), P(x,f(g),x) } is {y, f(g)}.</a></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <ul>
+            References
+            <li><a href="http://www.cs.toronto.edu/~sheila/384/w11/Lectures/csc384w11-KR-tutorial.pdf">Skolemization,
+                    Most General Unifiers,First-Order Resolution</a></li>
+            <li><a href="http://profs.sci.univr.it/~farinelli/courses/ar/slides/unification.pdf">Substitution and
+                    Unification</a></li>
+            <li><a href="http://www.mathcs.duq.edu/simon/Fall04/notes-7-4/node6.html">Most General Unifier</a></li>
+            <li><a href="https://math.stackexchange.com/q/1527903/27016">Is the following a unifier, but not a most
+                    general unifier?</a></li>
+            <li><a href="https://webdocs.cs.ualberta.ca/~you/courses/325/Mynotes/Log/unif.html">Unification</a></li>
+            <li><a href="http://artint.info/slides/ch12/lect4.pdf">Unifiers</a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+            <li><a href=""></a></li>
+        </ul>
+    </section> -->
+
+    <!-- javascript -->
+    <!-- <section>
+        <script type="text/javascript" src=".\JavaScript\notes.js"></script>
+
+        <script type="text/javascript">
+            // The onload event fires at the end of the document loading process.
+            window.onload = function () {
+                addToggleExpandCollapseForHiddenElement('img', "Show image");
+                addToggleExpandCollapseForHiddenElement('code', "Show code");
+                addToggleExpandCollapseForHiddenElement('ul', "Show list items");
+                removePreCodeLeadingTrailingLineFeeds();
+                //alert("JavaScript completed for window.onload .");    // Uncomment for testing.
+            };
+
+        </script>
+
+    </section> -->
+
+</body>
+
+</html>
